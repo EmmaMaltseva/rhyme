@@ -25,13 +25,22 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
   });
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  var _selectedPageIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -68,7 +77,23 @@ class HomeScreen extends StatelessWidget {
           ) //extract widget
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: theme.primaryColor,
+        unselectedItemColor: theme.hintColor,
+        currentIndex: _selectedPageIndex,
+        onTap: _openPage,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Поиск'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Избранное'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'Стихи'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Настройки'),
+        ],
+      ),
     );
+  }
+
+  void _openPage(int index) {
+    setState(() => _selectedPageIndex = index);
   }
 }
 
