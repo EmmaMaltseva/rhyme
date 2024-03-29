@@ -32,19 +32,18 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
+          const SliverAppBar(
             title: Text('Rhymer'),
             surfaceTintColor: Colors.transparent,
             pinned: true,
             snap: true,
             floating: true,
             bottom: PreferredSize(
-              child: SearchButton(), //extract widget
               preferredSize: Size.fromHeight(70),
+              child: SearchButton(), //extract widget
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)), //расстояние между апбаром и сливерлистом
@@ -58,29 +57,8 @@ class HomeScreen extends StatelessWidget {
                 itemCount: 10,
                 separatorBuilder: (context, index) => const SizedBox(width: 16,),
                 itemBuilder: (context, index) {
-                  return BaseContainer(
-                    width: 200,
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Слово', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
-                        Wrap(
-                          children: [
-                            Text('Рифма'),
-                            Text('Рифма'),
-                            Text('Рифма'),
-                            Text('Рифма'),
-                          ].map((e) => Padding( //вся конструкция мап с ту лист для добавления  padding между рифмами
-                            padding: EdgeInsets.only(right: 4),
-                            child: e,
-                            ))
-                            .toList(),
-                        )
-                      ],
-                    ),
-                  );},
+                  final rhymes = List.generate(4, (index) => 'Рифма $index');
+                  return RhymeHistoryCard(rhymes: rhymes);},
               ),
             )
           ),
@@ -90,9 +68,37 @@ class HomeScreen extends StatelessWidget {
           ) //extract widget
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: theme.primaryColor,
-        onPressed: () {},
+    );
+  }
+}
+
+class RhymeHistoryCard extends StatelessWidget {
+  const RhymeHistoryCard({
+    super.key,
+    required this.rhymes,
+  });
+
+  final List<String> rhymes;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BaseContainer(
+      width: 200,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Слово', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),),
+          Wrap(
+            children: rhymes.map((e) => Padding( //вся конструкция мап с ту лист для добавления  padding между рифмами
+              padding: EdgeInsets.only(right: 4),
+              child: Text(e),
+              ))
+              .toList(),
+          )
+        ],
       ),
     );
   }
