@@ -37,46 +37,24 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   var _selectedPageIndex = 0;
+  final _pageController = PageController(); //для переключения между страницами
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          const SliverAppBar(
-            title: Text('Rhymer'),
-            surfaceTintColor: Colors.transparent,
-            pinned: true,
-            snap: true,
-            floating: true,
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(70),
-              child: SearchButton(), //extract widget
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)), //расстояние между апбаром и сливерлистом
-          SliverToBoxAdapter(
-            child: 
-            SizedBox(
-              height: 100,
-              child: ListView.separated(  //помимо ListView.builder есть ListView.separated. он позволяет добавить разделители с помощью separatorBuilder
-                padding: const EdgeInsets.only(left: 16),
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                separatorBuilder: (context, index) => const SizedBox(width: 16,),
-                itemBuilder: (context, index) {
-                  final rhymes = List.generate(4, (index) => 'Рифма $index');
-                  return RhymeHistoryCard(rhymes: rhymes);},
-              ),
-            )
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          SliverList.builder(
-            itemBuilder: (context, index) => const RhymeListCard()
-          ) //extract widget
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (value) {
+          setState(() => _selectedPageIndex = value);
+        },
+        children: [
+          SearchScreen(),
+          Scaffold(),
+          Scaffold(),
+          Scaffold()
         ],
-      ),
+      ), 
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.hintColor,
@@ -94,6 +72,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openPage(int index) {
     setState(() => _selectedPageIndex = index);
+    _pageController.animateToPage(
+      index, 
+      duration: Duration(microseconds: 300),
+      curve: Curves.linear
+    ); //или обычный метод jumpToPage(index)
+  }
+}
+
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        const SliverAppBar(
+          title: Text('Rhymer'),
+          surfaceTintColor: Colors.transparent,
+          pinned: true,
+          snap: true,
+          floating: true,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(70),
+            child: SearchButton(), //extract widget
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)), //расстояние между апбаром и сливерлистом
+        SliverToBoxAdapter(
+          child: 
+          SizedBox(
+            height: 100,
+            child: ListView.separated(  //помимо ListView.builder есть ListView.separated. он позволяет добавить разделители с помощью separatorBuilder
+              padding: const EdgeInsets.only(left: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              separatorBuilder: (context, index) => const SizedBox(width: 16,),
+              itemBuilder: (context, index) {
+                final rhymes = List.generate(4, (index) => 'Рифма $index');
+                return RhymeHistoryCard(rhymes: rhymes);},
+            ),
+          )
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        SliverList.builder(
+          itemBuilder: (context, index) => const RhymeListCard()
+        ) //extract widget
+      ],
+    );
   }
 }
 
